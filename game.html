@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic Tac Toe Cute</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(to right, #ffc0cb, #ffe6eb);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 30px;
+    }
+    h1 {
+      color: #ff69b4;
+      text-shadow: 2px 2px white;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #fff0f5;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #ff69b4;
+      font-size: 2.5rem;
+      text-align: center;
+      line-height: 100px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .cell:hover {
+      transform: scale(1.1);
+      background-color: #ffe6f2;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #d63384;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #ff69b4;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff1493;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💖 Tic Tac Toe vs Komputer 🐱</h1>
+  <div class="board" id="board"></div>
+  <div class="status" id="status">Giliran kamu (😺)</div>
+  <button onclick="restartGame()">Main Lagi</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const statusText = document.getElementById('status');
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    let isGameActive = true;
+    const playerSymbol = '😺';
+    const aiSymbol = '🐰';
+
+    const winConditions = [
+      [0,1,2], [3,4,5], [6,7,8],
+      [0,3,6], [1,4,7], [2,5,8],
+      [0,4,8], [2,4,6]
+    ];
+
+    function renderBoard() {
+      board.innerHTML = '';
+      gameBoard.forEach((cell, index) => {
+        const cellElement = document.createElement('div');
+        cellElement.classList.add('cell');
+        cellElement.textContent = cell;
+        cellElement.addEventListener('click', () => makeMove(index));
+        board.appendChild(cellElement);
+      });
+    }
+
+    function makeMove(index) {
+      if (gameBoard[index] === '' && isGameActive) {
+        gameBoard[index] = playerSymbol;
+        renderBoard();
+        if (checkWinner(playerSymbol)) {
+          statusText.textContent = 'Kamu menang! 🎉';
+          isGameActive = false;
+        } else if (gameBoard.every(cell => cell !== '')) {
+          statusText.textContent = 'Seri! 🤝';
+          isGameActive = false;
+        } else {
+          statusText.textContent = 'Giliran komputer...';
+          setTimeout(aiMove, 500);
+        }
+      }
+    }
+
+    function aiMove() {
+      if (!isGameActive) return;
+      let emptyIndices = gameBoard.map((val, idx) => val === '' ? idx : null).filter(v => v !== null);
+      let randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      gameBoard[randomIndex] = aiSymbol;
+      renderBoard();
+      if (checkWinner(aiSymbol)) {
+        statusText.textContent = 'Komputer menang! 😿';
+        isGameActive = false;
+      } else if (gameBoard.every(cell => cell !== '')) {
+        statusText.textContent = 'Seri! 🤝';
+        isGameActive = false;
+      } else {
+        statusText.textContent = 'Giliran kamu (😺)';
+      }
+    }
+
+    function checkWinner(symbol) {
+      return winConditions.some(condition => {
+        return condition.every(index => gameBoard[index] === symbol);
+      });
+    }
+
+    function restartGame() {
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      isGameActive = true;
+      statusText.textContent = 'Giliran kamu (😺)';
+      renderBoard();
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
